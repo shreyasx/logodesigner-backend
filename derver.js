@@ -112,32 +112,3 @@ app.post('/signin', (req, res) => {
 app.listen(3001, () => {
   console.log('app on 3001');
 });
-
-// try {
-//   console.log("try block", name, email, password, hash);
-//   postgres.insert({ name, email, hash }).into('login').returning('*')
-//     .then(u => res.json(u[0])).catch(e => res.json(e));
-// } catch {
-//   console.log("catch block");
-//   (err => res.status(400).json('unable to register'));
-// }
-
-
-// postgres.select('*').from('hashtags')
-// .where('hashtag_name', '=', hashtags.pop())
-// .then(re => {
-//   if (re.length > 0) {
-//     postgres('logos').insert({
-//       name: name,
-//       description: desc,
-//       category: 1,
-//       hashtags: re[0].hashtag_id,
-//       logo_img_url: result.secure_url
-//     }).returning('*').then(x => {
-//       console.log(x);
-//       res.json("boommmmmmmm");
-//     }).catch(console.log);
-//   }
-//   else
-//     console.log("no fnd");
-// }).catch();
