@@ -55,21 +55,33 @@ const insertHashtags = (id, hashtags) => {
 app.get('/', (req, res) => res.render('login.html'));
 
 app.get('/hashtags', (req, res) => {
-  postgres('logos')
-    .join('junction_table', 'logos.logo_id', '=', 'junction_table.logo_id')
-    .join('hashtags', 'junction_table.hashtag_id', '=', 'hashtags.hashtag_id')
-    .select('logos.name', 'hashtags.hashtag_name')
-    .then(r => res.json(r)).catch(console.log);
+  if (req.query.id) {
+    postgres('logos')
+      .join('junction_table', 'logos.logo_id', '=', 'junction_table.logo_id')
+      .join('hashtags', 'junction_table.hashtag_id', '=', 'hashtags.hashtag_id')
+      .select('logos.name', 'hashtags.hashtag_name')
+      .where('logos.logo_id', '=', req.query.id)
+      .then(r => res.json(r)).catch(console.log);
+  } else {
+    postgres('logos')
+      .join('junction_table', 'logos.logo_id', '=', 'junction_table.logo_id')
+      .join('hashtags', 'junction_table.hashtag_id', '=', 'hashtags.hashtag_id')
+      .select('logos.name', 'hashtags.hashtag_name')
+      .then(r => res.json(r)).catch(console.log);
+  }
 });
 
 app.get('/search', (req, res) => {
-  postgres('hashtags').where('hashtag_name', 'like', '%' + req.query.query + '%')
-    .then(resp => res.json(resp.map(x => x.hashtag_name)));
-});
-
-app.get('/search/logos', (req, res) => {
-  postgres('junction_table').where('hashtag_name', 'like', req.query.query + '%')
-    .then(resp => res.json(resp.map(x => x.hashtag_name)));
+  if (req.query.hash) {
+    postgres('logos')
+      .join('junction_table', 'logos.logo_id', '=', 'junction_table.logo_id')
+      .join('hashtags', 'junction_table.hashtag_id', '=', 'hashtags.hashtag_id')
+      .select('logos.logo_id').where('hashtags.hashtag_name', '=', req.query.hash)
+      .then(r => res.json(r)).catch(console.log);
+  } else {
+    postgres('hashtags').where('hashtag_name', 'like', '%' + req.query.query + '%')
+      .then(resp => res.json(resp.map(x => x.hashtag_name)));
+  }
 });
 
 app.get('/empty', (req, res) => {
@@ -113,10 +125,19 @@ app.post('/upload', (req, res) => {
 });
 
 app.get('/logos', (req, res) => {
-  postgres('logos')
-    .join('categories', 'logos.category', '=', 'categories.category_id')
-    .select('logos.name', 'logos.description', 'categories.category_name', 'logos.logo_img_url')
-    .then(r => res.json(r));
+  if (req.query.id) {
+    postgres('logos')
+      .join('categories', 'logos.category', '=', 'categories.category_id')
+      .select('logo_id', 'logos.name', 'logos.description', 'categories.category_name',
+        'logos.logo_img_url').where('logos.logo_id', '=', req.query.id)
+      .then(r => res.json(r));
+  } else {
+    postgres('logos')
+      .join('categories', 'logos.category', '=', 'categories.category_id')
+      .select('logo_id', 'logos.name', 'logos.description', 'categories.category_name',
+        'logos.logo_img_url')
+      .then(r => res.json(r));
+  }
 });
 
 app.get('/add', (req, res) => res.render('add.html'));
