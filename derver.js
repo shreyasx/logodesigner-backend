@@ -71,6 +71,18 @@ app.get('/hashtags', (req, res) => {
   }
 });
 
+app.get('/categories', (req, res) => {
+  if (req.query.name) {
+    postgres('logos')
+      .join('categories', 'logos.category', '=', 'categories.category_id')
+      .select('logos.name', 'logos.description', 'categories.category_name',
+        'logos.logo_img_url').where('categories.category_name', '=', req.query.name)
+      .then(resp => res.json(resp));
+  } else {
+    res.json("id kon bapui ghaltalo?");
+  }
+});
+
 app.get('/search', (req, res) => {
   if (req.query.hash) {
     postgres('logos')
