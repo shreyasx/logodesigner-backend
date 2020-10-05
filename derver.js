@@ -76,7 +76,9 @@ app.get('/search', (req, res) => {
     postgres('logos')
       .join('junction_table', 'logos.logo_id', '=', 'junction_table.logo_id')
       .join('hashtags', 'junction_table.hashtag_id', '=', 'hashtags.hashtag_id')
-      .select('logos.logo_id').where('hashtags.hashtag_name', '=', req.query.hash)
+      .join('categories', 'logos.category', '=', 'categories.category_id')
+      .select('logos.name', 'logos.description', 'categories.category_name',
+        'logos.logo_img_url').where('hashtags.hashtag_name', '=', req.query.hash)
       .then(r => res.json(r)).catch(console.log);
   } else {
     postgres('hashtags').where('hashtag_name', 'like', '%' + req.query.query + '%')
