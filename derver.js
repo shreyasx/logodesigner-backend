@@ -75,10 +75,7 @@ app.get('/search', (req, res) => {
     .join('categories', 'logos.category', '=', 'categories.category_id')
     .select('logos.name', 'logos.description', 'categories.category_name',
       'logos.logo_img_url').where('hashtags.hashtag_name', 'like', '%' + req.query.hash + '%')
-    .then(r => {
-      res.json(r);
-      console.log(r);
-    }).catch(console.log);
+    .then(r => res.json(r)).catch(console.log);
 });
 
 app.get('/empty', (req, res) => {
