@@ -56,23 +56,6 @@ const insertHashtags = (id, hashtags) => {
 
 app.get('/', (req, res) => res.render('login.html'));
 
-app.get('/hashtags', (req, res) => {
-  if (req.query.id) {
-    postgres('logos')
-      .join('junction_table', 'logos.logo_id', '=', 'junction_table.logo_id')
-      .join('hashtags', 'junction_table.hashtag_id', '=', 'hashtags.hashtag_id')
-      .select('logos.name', 'hashtags.hashtag_name')
-      .where('logos.logo_id', '=', req.query.id)
-      .then(r => res.json(r)).catch(console.log);
-  } else {
-    postgres('logos')
-      .join('junction_table', 'logos.logo_id', '=', 'junction_table.logo_id')
-      .join('hashtags', 'junction_table.hashtag_id', '=', 'hashtags.hashtag_id')
-      .select('logos.name', 'hashtags.hashtag_name')
-      .then(r => res.json(r)).catch(console.log);
-  }
-});
-
 app.get('/categories', (req, res) => {
   if (req.query.name) {
     postgres('logos')
@@ -86,18 +69,16 @@ app.get('/categories', (req, res) => {
 });
 
 app.get('/search', (req, res) => {
-  if (req.query.hash) {
-    postgres('logos')
-      .join('junction_table', 'logos.logo_id', '=', 'junction_table.logo_id')
-      .join('hashtags', 'junction_table.hashtag_id', '=', 'hashtags.hashtag_id')
-      .join('categories', 'logos.category', '=', 'categories.category_id')
-      .select('logos.name', 'logos.description', 'categories.category_name',
-        'logos.logo_img_url').where('hashtags.hashtag_name', '=', req.query.hash)
-      .then(r => res.json(r)).catch(console.log);
-  } else {
-    postgres('hashtags').where('hashtag_name', 'like', '%' + req.query.query + '%')
-      .then(resp => res.json(resp.map(x => x.hashtag_name)));
-  }
+  postgres('logos')
+    .join('junction_table', 'logos.logo_id', '=', 'junction_table.logo_id')
+    .join('hashtags', 'junction_table.hashtag_id', '=', 'hashtags.hashtag_id')
+    .join('categories', 'logos.category', '=', 'categories.category_id')
+    .select('logos.name', 'logos.description', 'categories.category_name',
+      'logos.logo_img_url').where('hashtags.hashtag_name', 'like', '%' + req.query.hash + '%')
+    .then(r => {
+      res.json(r);
+      console.log(r);
+    }).catch(console.log);
 });
 
 app.get('/empty', (req, res) => {
