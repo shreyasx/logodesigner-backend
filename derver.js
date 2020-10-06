@@ -2,6 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 var mustacheExpress = require('mustache-express');
 const app = express();
+const cors = require('cors');
 const knex = require('knex');
 const bcrypt = require('bcrypt');
 const cloudinary = require('cloudinary');
@@ -11,6 +12,7 @@ app.use('/public/', express.static('./public'));
 app.engine('html', mustacheExpress());
 app.use(bodyParser.urlencoded({ limit: "50mb", extended: false, parameterLimit: 50000 }));
 app.use(bodyParser.json({ limit: "50mb" }));
+app.use(cors());
 
 const postgres = knex({
   client: 'pg',
