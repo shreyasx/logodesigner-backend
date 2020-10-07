@@ -56,6 +56,11 @@ const insertHashtags = (id, hashtags) => {
 
 app.get('/', (req, res) => res.render('login.html'));
 
+app.get('/allcategs', (req, res) => {
+  postgres('categories').select('category_name').then(re => re.map(resp => resp.category_name))
+    .then(r => res.json(r));
+});
+
 app.get('/categories', (req, res) => {
   if (req.query.name) {
     postgres('logos')
