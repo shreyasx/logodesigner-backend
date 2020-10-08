@@ -11,15 +11,15 @@
 <body>
   <form action="" id="form">
     <p><label for="name">Name:</label>
-      <input type="text" name="" id="name"></p>
-    <p><label for="desc">Description:</label>
-      <input type="text" name="" id="desc"></p>
+      <input required type="text" name="" id="name"></p>
+    <p><label for="desc">Description:*Not more than 80 chars*</label>
+      <input required type="text" name="" id="desc"></p>
     <p><label for="categ">Category:</label>
-      <input type="text" name="" id="categ"></p>
+      <input required type="text" name="" id="categ"></p>
     <p><label for="hash">Hashtags:(space seperated)</label>
-      <input type="text" name="" id="hash"></p>
+      <input required type="text" name="" id="hash"></p>
     <p><label for="file-upload">Logo Image:</label>
-      <input id="file-upload" type="file">
+      <input required id="file-upload" type="file">
     </p>
     <p><button type="submit">GO BXTCH</button></p>
   </form>
