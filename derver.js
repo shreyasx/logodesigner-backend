@@ -24,6 +24,19 @@ const postgres = knex({
   }
 });
 
+const removeDuplicates = (originalArray, prop) => {
+  var newArray = [];
+  var lookupObject = {};
+
+  for (var i in originalArray)
+    lookupObject[originalArray[i][prop]] = originalArray[i];
+
+  for (i in lookupObject)
+    newArray.push(lookupObject[i]);
+
+  return newArray;
+}
+
 cloudinary.config({
   cloud_name: 'shrey',
   api_key: '672841614512178',
@@ -57,8 +70,11 @@ const insertHashtags = (id, hashtags) => {
 app.get('/', (req, res) => res.render('login.html'));
 
 app.get('/allcategs', (req, res) => {
-  postgres('categories').select('category_name').then(re => re.map(resp => resp.category_name))
-    .then(r => res.json(r));
+  postgres('logos')
+    .join('categories', 'logos.category', '=', 'categories.category_id')
+    .select('categories.category_name')
+    .then(re => removeDuplicates(re, 'category_name')).then(r => r.map(x => x.category_name))
+    .then(resp => res.json(resp)).catch(console.log);
 });
 
 app.get('/categories', (req, res) => {
@@ -80,7 +96,7 @@ app.get('/search', (req, res) => {
     .join('categories', 'logos.category', '=', 'categories.category_id')
     .select('logos.name', 'logos.description', 'categories.category_name',
       'logos.logo_img_url').where('hashtags.hashtag_name', 'like', '%' + req.query.hash + '%')
-    .then(r => res.json(r)).catch(console.log);
+    .then(r => removeDuplicates(r, 'name')).then(resp => res.json(resp)).catch(console.log);
 });
 
 app.get('/empty', (req, res) => {

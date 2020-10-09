@@ -20,10 +20,10 @@ window.onload = function () {
       data: formData
     }).then(res => {
       const data = {
-        name: document.getElementById('name').value,
+        name: document.getElementById('name').value.toLowerCase(),
         desc: document.getElementById('desc').value,
-        category: document.getElementById('categ').value,
-        hashs: document.getElementById('hash').value,
+        category: document.getElementById('categ').value.toLowerCase(),
+        hashs: document.getElementById('hash').value.toLowerCase(),
         url: res.data.secure_url
       };
       fetch('/upload', {
