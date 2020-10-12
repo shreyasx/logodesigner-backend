@@ -24,7 +24,8 @@ window.onload = function () {
         desc: document.getElementById('desc').value,
         category: document.getElementById('categ').value.toLowerCase(),
         hashs: document.getElementById('hash').value.toLowerCase(),
-        url: res.data.secure_url
+        url: res.data.secure_url,
+        isSignedin: true
       };
       fetch('/upload', {
         method: 'POST',

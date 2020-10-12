@@ -6,6 +6,8 @@ const cors = require('cors');
 const knex = require('knex');
 const bcrypt = require('bcrypt');
 const cloudinary = require('cloudinary');
+const cookieParser = require('cookie-parser');
+const session = require('express-session');
 
 app.set('view engine', 'mustache');
 app.use('/public/', express.static('./public'));
@@ -13,6 +15,12 @@ app.engine('html', mustacheExpress());
 app.use(bodyParser.urlencoded({ limit: "50mb", extended: false, parameterLimit: 50000 }));
 app.use(bodyParser.json({ limit: "50mb" }));
 app.use(cors());
+app.use(cookieParser());
+app.use(session({
+  secret: 'kedar fode complicated string',
+  saveUninitialized: true,
+  resave: false
+}));
 
 const postgres = knex({
   client: 'pg',
@@ -155,27 +163,45 @@ app.get('/logos', (req, res) => {
   }
 });
 
-app.get('/add', (req, res) => res.render('add.html'));
+app.get('/add', (req, res) => {
+  if (req.session.isLoggedIn === true) {
+    res.render('add.html');
+  } else {
+    res.status(200).send();
+  }
+});
 
-app.get('/delete', (req, res) => res.render('delete.html'));
+app.get('/delete', (req, res) => {
+  if (req.session.isLoggedIn === true) {
+    res.render('delete.html');
+  } else {
+    res.status(200).send();
+  }
+});
 
 app.post('/delete', (req, res) => {
-  postgres.select('*').from('logos').where('logo_id', '=', req.body.id)
-    .then(resp => {
-      if (resp.length > 0)
-        postgres('logos').where('logo_id', req.body.id).del()
-          .then(() => res.json("wow")).catch(console.log);
-      else res.json("Wrong id");
-    });
+  if (req.session.isLoggedIn === true) {
+    postgres.select('*').from('logos').where('logo_id', '=', req.body.id)
+      .then(resp => {
+        if (resp.length > 0)
+          postgres('logos').where('logo_id', req.body.id).del()
+            .then(() => res.json("wow")).catch(console.log);
+        else res.json("Wrong id");
+      });
+  } else {
+    res.status(200).send();
+  }
 });
 
 app.post('/signin', (req, res) => {
   const { username, password } = req.body;
-  postgres.select('email', 'hash').from('login').where('email', '=', username)
+  postgres.select('hash').from('login').where('email', '=', username)
     .then(data => {
       bcrypt.compare(password, data[0].hash, function (err, result) {
-        if (result) res.render('choice.html');  // kedar@ ked
-        else res.render("login.html");
+        if (result) {
+          req.session.isLoggedIn = true;
+          res.render('choice.html');
+        } else res.render('login.html');
       });
     }).catch(e => {
       res.render("login.html");
