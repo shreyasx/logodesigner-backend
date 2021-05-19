@@ -2,9 +2,9 @@
   "name": "kedar",
   "version": "1.0.0",
   "description": "",
-  "main": "derver.js",
+  "main": "server.js",
   "scripts": {
-    "test": "nodemon ./derver.js"
+    "start": "node server"
   },
   "author": "Shreyas",
   "license": "ISC",
